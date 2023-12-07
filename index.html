@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chat App</title>
+  <style>
+    h2,
+    h3,
+    span {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      font-weight: 100;
+    }
+
+    #chatBox,
+    button {
+      border: 1px solid lightgrey;
+      border-radius: 3px;
+    }
+
+    button {
+      background-color: lightgrey;
+      border: 1px solid grey;
+      padding: 5px;
+      transition: 0.5s;
+      -webkit-transition: 0.5s;
+    }
+
+    button:hover {
+      background-color: lightslategray;
+      color: #f1f1f1;
+    }
+
+    #closeBtn {
+      background-color: maroon;
+      color: #f1f1f1;
+      width: 30px;
+    }
+
+    .main-container {
+      text-align: center;
+    }
+
+    #chatBox {
+      width: fit-content;
+      padding-inline: 20px;
+      box-shadow: 0px 10px 10px 0px lightgrey;
+    }
+
+    input[type=text] {
+      border: 1px solid lightgrey;
+      border-radius: 3px;
+      height: 25px;
+      outline: none;
+      -webkit-transition: 0.5s;
+      transition: 0.5s;
+    }
+
+    input[type=text]:focus {
+      border: 1px solid grey;
+    }
+
+    #showMsg {
+      width: 97%;
+      margin-bottom: 1%;
+      height: 300px;
+      background-color: #f9f8f8cf;
+      border:1px solid lightgrey;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="main-container">
+    <dialog id="chatBox">
+      <h3>Chat Box</h3>
+      <div class="outer-container">
+        <div id="showMsg"></div>
+        <div class="inner-container">
+          <input type="text" id="message" placeholder="Enter your message">
+          <button onclick="sendMsg()"><span>Send</span></button>
+          <button onclick="closeDialog()" id="closeBtn"><span>X</span></button>
+        </div>
+      </div>
+    </dialog>
+    <h2>Real time chatting application</h2>
+    <button onclick="showDialog()"><span>Open</span></button>
+  </div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const doc = document.getElementById("chatBox");
+    const socket = io();
+    socket.on("serverMsg", (serverMsg) => {
+      const p = document.createElement("p");
+      p.innerHTML = "<i>" +serverMsg+ "</i>";
+      document.getElementById("showMsg").appendChild(p);
+      console.log("serverMsg",serverMsg)
+    })
+    socket.on("id", (id)=>{
+      const p = document.createElement("p");
+      p.innerHTML = "<hr><small>" +id+ "</small>";
+      document.getElementById("showMsg").appendChild(p)
+    } )
+    showDialog = () => {
+      doc.show();
+    }
+    closeDialog = () => doc.close();
+    sendMsg = () => socket.emit("message",document.getElementById("message").value);
+  </script>
+</body>
+
+</html>
